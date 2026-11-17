@@ -1,0 +1,51 @@
+{% extends 'livraria/base.html' %}
+
+{% block titulo %}Minhas compras - Livraria{% endblock %}
+
+{% block conteudo %}
+<section class="pb-8 pt-14">
+    <p class="animate-fade-up text-xs font-semibold uppercase tracking-[0.3em] text-tijolo">A sua estante</p>
+    <h1 class="animate-fade-up mt-2 font-serif text-5xl font-semibold tracking-tighter sm:text-6xl" style="animation-delay:.1s">
+        Minhas <em class="font-normal text-tijolo">compras.</em>
+    </h1>
+</section>
+
+{% if vendas %}
+<div class="reveal overflow-x-auto border-t-2 border-tinta">
+    <table class="w-full min-w-[560px] text-left">
+        <thead>
+            <tr class="border-b border-tinta text-xs uppercase tracking-widest text-suave">
+                <th class="px-3 py-4 font-semibold">Pedido</th>
+                <th class="px-3 py-4 font-semibold">Livro</th>
+                <th class="px-3 py-4 font-semibold">Qtd.</th>
+                <th class="px-3 py-4 font-semibold">Preço unit.</th>
+                <th class="px-3 py-4 font-semibold">Total</th>
+                <th class="px-3 py-4 font-semibold">Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vendas %}
+            <tr class="border-b border-linha transition-colors hover:bg-papel-escuro/70">
+                <td class="px-3 py-4"><a class="link-anim text-tijolo" href="{% url 'confirmacao' v.id %}">#{{ v.id }}</a></td>
+                <td class="px-3 py-4 font-serif text-lg">{{ v.livro.titulo }}</td>
+                <td class="px-3 py-4">{{ v.quantidade }}</td>
+                <td class="px-3 py-4">{{ v.preco_venda }} Kz</td>
+                <td class="px-3 py-4 font-medium">{{ v.total }} Kz</td>
+                <td class="px-3 py-4 text-suave">{{ v.data_venda }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="reveal my-8 text-right">
+    <p class="text-xs uppercase tracking-[0.2em] text-suave">Total gasto</p>
+    <p class="font-serif text-4xl font-semibold tracking-tight">{{ total_gasto }} Kz</p>
+</div>
+{% else %}
+<div class="animate-fade-up py-16 text-center">
+    <p class="font-serif text-3xl">A sua estante está vazia.</p>
+    <a class="btn mt-6" href="{% url 'catalogo' %}">Ver o catálogo</a>
+</div>
+{% endif %}
+<a class="btn btn-sec" href="{% url 'catalogo' %}">← Voltar ao catálogo</a>
+{% endblock %}

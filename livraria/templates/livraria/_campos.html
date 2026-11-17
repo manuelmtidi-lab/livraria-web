@@ -1,0 +1,11 @@
+{% for erro in form.non_field_errors %}
+<p class="mb-4 border-l-4 border-tijolo bg-tijolo/10 p-3 text-sm text-tijolo">{{ erro }}</p>
+{% endfor %}
+{% for campo in form %}
+<div class="mb-5">
+    <label for="{{ campo.id_for_label }}" class="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-suave">{{ campo.label }}</label>
+    {{ campo }}
+    {% if campo.help_text %}<div class="mt-1.5 text-xs text-suave [&_ul]:list-disc [&_ul]:pl-4">{{ campo.help_text|safe }}</div>{% endif %}
+    {% for erro in campo.errors %}<p class="mt-1.5 text-sm text-tijolo">{{ erro }}</p>{% endfor %}
+</div>
+{% endfor %}

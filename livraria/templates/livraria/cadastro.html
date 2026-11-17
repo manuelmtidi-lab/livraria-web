@@ -1,0 +1,28 @@
+{% extends 'livraria/base.html' %}
+{% load static %}
+
+{% block titulo %}Criar conta - Livraria{% endblock %}
+
+{% block conteudo %}
+<div class="animate-fade-up mx-auto mt-10 grid max-w-4xl overflow-hidden border-2 border-tinta bg-creme shadow-hard md:grid-cols-2">
+    <div class="relative hidden bg-floresta md:block">
+        <img src="{% static 'livraria/estante.svg' %}" alt="" class="absolute inset-0 h-full w-full object-cover">
+        <div class="relative flex h-full min-h-[560px] flex-col justify-end bg-gradient-to-t from-floresta via-floresta/50 to-transparent p-8 text-papel">
+            <p class="font-serif text-3xl leading-tight">A sua estante<br>começa <em class="text-ouro">aqui</em>.</p>
+        </div>
+    </div>
+    <div class="p-8 sm:p-10">
+        <h1 class="font-serif text-3xl font-semibold tracking-tight">Criar conta</h1>
+        <p class="mb-6 mt-1 text-sm text-suave">É rápido e dá acesso ao histórico das suas compras.</p>
+
+        {% include 'livraria/_google.html' with texto="Cadastrar com Google" %}
+
+        <form method="post">
+            {% csrf_token %}
+            {% include 'livraria/_campos.html' %}
+            <button type="submit" class="btn group w-full">Cadastrar <span class="transition-transform duration-300 group-hover:translate-x-1">→</span></button>
+        </form>
+        <p class="mt-6 text-sm text-suave">Já tem conta? <a class="link-anim text-tijolo" href="{% url 'login' %}">Entrar</a></p>
+    </div>
+</div>
+{% endblock %}

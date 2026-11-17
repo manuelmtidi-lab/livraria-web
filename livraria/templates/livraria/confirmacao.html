@@ -1,0 +1,36 @@
+{% extends 'livraria/base.html' %}
+
+{% block titulo %}Compra confirmada - Livraria{% endblock %}
+
+{% block conteudo %}
+<div class="animate-fade-up mx-auto mt-12 max-w-lg border-2 border-tinta bg-creme p-8 shadow-hard">
+    <div class="flex items-center gap-4">
+        <span class="grid h-14 w-14 shrink-0 animate-pop place-items-center rounded-full bg-floresta">
+            <svg viewBox="0 0 24 24" class="h-8 w-8 text-papel" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path class="animate-draw [stroke-dasharray:30] [stroke-dashoffset:30]" d="M5 12.5l4.5 4.5L19 7.5"/>
+            </svg>
+        </span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-floresta">Pedido nº {{ venda.id }}</p>
+            <h1 class="font-serif text-3xl font-semibold tracking-tight">Compra confirmada.</h1>
+        </div>
+    </div>
+
+    <dl class="mt-6 border-t border-linha">
+        <div class="flex justify-between border-b border-linha py-3"><dt class="text-suave">Livro</dt><dd class="font-medium">{{ venda.livro.titulo }}</dd></div>
+        <div class="flex justify-between border-b border-linha py-3"><dt class="text-suave">Quantidade</dt><dd class="font-medium">{{ venda.quantidade }}</dd></div>
+        <div class="flex justify-between border-b border-linha py-3"><dt class="text-suave">Preço unitário</dt><dd class="font-medium">{{ venda.preco_venda }} Kz</dd></div>
+        <div class="flex justify-between border-b border-linha py-3"><dt class="text-suave">Data</dt><dd class="font-medium">{{ venda.data_venda }}</dd></div>
+    </dl>
+
+    <div class="mt-4 flex items-baseline justify-between border-t-2 border-dashed border-tinta pt-4">
+        <span class="text-xs uppercase tracking-[0.2em]">Total</span>
+        <strong class="font-serif text-4xl">{{ total }} Kz</strong>
+    </div>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+        <a class="btn" href="{% url 'catalogo' %}">Continuar a comprar</a>
+        <a class="btn btn-sec" href="{% url 'minhas_compras' %}">Minhas compras</a>
+    </div>
+</div>
+{% endblock %}

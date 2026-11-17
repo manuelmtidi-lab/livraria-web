@@ -1,0 +1,11 @@
+<div class="relative aspect-[2/3] overflow-hidden rounded-l-sm rounded-r-lg shadow-capa {% if livro.capa %}bg-papel-escuro{% else %}{{ livro.paleta }} before:absolute before:inset-y-0 before:left-0 before:w-2.5 before:bg-gradient-to-r before:from-black/30 before:via-white/10 before:to-transparent after:pointer-events-none after:absolute after:inset-[10px] after:border after:border-current after:opacity-30{% endif %}">
+    {% if livro.capa %}
+        <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}" loading="lazy" class="h-full w-full object-cover">
+        <span class="absolute inset-y-0 left-0 w-2.5 bg-gradient-to-r from-black/30 to-transparent"></span>
+    {% else %}
+        <div class="relative z-10 flex h-full flex-col justify-between p-4 pl-6">
+            <p class="font-serif text-xl font-semibold leading-tight tracking-tight">{{ livro.titulo }}</p>
+            <p class="text-[0.65rem] uppercase tracking-[0.2em] opacity-85">{{ livro.autor }}</p>
+        </div>
+    {% endif %}
+</div>

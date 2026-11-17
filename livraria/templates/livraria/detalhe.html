@@ -1,0 +1,95 @@
+{% extends 'livraria/base.html' %}
+
+{% block titulo %}{{ livro.titulo }} - Livraria{% endblock %}
+
+{% block conteudo %}
+<a href="{% url 'catalogo' %}" class="link-anim mt-8 inline-block text-sm text-suave transition-colors hover:text-tijolo">← Voltar ao catálogo</a>
+
+<div class="grid items-start gap-10 py-8 md:grid-cols-[300px_1fr] md:gap-16">
+    <div class="mx-auto w-56 animate-pop md:w-full">
+        <div class="animate-float" style="--r:0deg">
+            {% include 'livraria/_capa.html' %}
+        </div>
+    </div>
+
+    <div>
+        <h1 class="animate-fade-up font-serif text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{{ livro.titulo }}</h1>
+        <p class="animate-fade-up mt-2 text-lg text-suave" style="animation-delay:.1s">de <span class="text-tinta">{{ livro.autor }}</span></p>
+
+        <dl class="animate-fade-up mt-8 border-t border-linha" style="animation-delay:.2s">
+            <div class="flex justify-between border-b border-linha py-3"><dt class="text-suave">Editora</dt><dd class="font-medium">{{ livro.editora }}</dd></div>
+            {% if livro.edicao_volume %}<div class="flex justify-between border-b border-linha py-3"><dt class="text-suave">Edição / Volume</dt><dd class="font-medium">{{ livro.edicao_volume }}</dd></div>{% endif %}
+            {% if livro.data_publicacao %}<div class="flex justify-between border-b border-linha py-3"><dt class="text-suave">Publicação</dt><dd class="font-medium">{{ livro.data_publicacao }}</dd></div>{% endif %}
+            <div class="flex justify-between border-b border-linha py-3">
+                <dt class="text-suave">Disponibilidade</dt>
+                <dd class="font-medium">
+                    {% if livro.quantidade == 0 %}
+                        <span class="text-tijolo">Esgotado</span>
+                    {% elif livro.quantidade <= 3 %}
+                        <span class="inline-flex items-center gap-2 text-tijolo">
+                            <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-tijolo opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-tijolo"></span></span>
+                            Só restam {{ livro.quantidade }}
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-2 text-floresta"><span class="h-2 w-2 rounded-full bg-floresta"></span>{{ livro.quantidade }} em stock</span>
+                    {% endif %}
+                </dd>
+            </div>
+        </dl>
+
+        <p class="animate-fade-up mt-6 font-serif text-5xl font-semibold" style="animation-delay:.3s">{{ livro.preco_venda }} Kz</p>
+
+        <div class="animate-fade-up" style="animation-delay:.4s">
+        {% if livro.quantidade > 0 %}
+            {% if user.is_authenticated %}
+            <form id="form-compra" method="post" action="{% url 'comprar' livro.id %}" class="mt-8 flex flex-wrap items-end gap-4">
+                {% csrf_token %}
+                <div>
+                    <label for="qtd" class="mb-1 block text-xs uppercase tracking-widest text-suave">Quantidade</label>
+                    <div class="flex items-stretch border-2 border-tinta">
+                        <button type="button" data-menos class="w-11 text-xl transition hover:bg-tinta hover:text-papel active:scale-90" aria-label="Menos">−</button>
+                        <input id="qtd" type="number" name="quantidade" value="1" min="1" max="{{ livro.quantidade }}"
+                               class="w-14 border-x-2 border-tinta bg-transparent text-center text-lg outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none">
+                        <button type="button" data-mais class="w-11 text-xl transition hover:bg-tinta hover:text-papel active:scale-90" aria-label="Mais">+</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn group">
+                    <span data-texto>Comprar agora</span>
+                    <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                </button>
+            </form>
+            {% else %}
+            <a class="btn group mt-8" href="{% url 'login' %}?next={{ request.path }}">
+                Entrar para comprar <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </a>
+            {% endif %}
+        {% else %}
+            <p class="mt-8 font-semibold text-tijolo">Esgotado de momento.</p>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var f = document.getElementById('form-compra');
+    if (!f) return;
+    var q = f.querySelector('#qtd');
+    var max = parseInt(q.max, 10) || 1;
+    f.querySelector('[data-menos]').addEventListener('click', function () {
+        q.value = Math.max(1, (parseInt(q.value, 10) || 1) - 1);
+    });
+    f.querySelector('[data-mais]').addEventListener('click', function () {
+        q.value = Math.min(max, (parseInt(q.value, 10) || 1) + 1);
+    });
+    f.addEventListener('submit', function () {
+        var b = f.querySelector('button[type=submit]');
+        b.querySelector('[data-texto]').textContent = 'A processar…';
+        b.classList.add('opacity-70');
+        setTimeout(function () { b.disabled = true; }, 0);
+    });
+})();
+</script>
+{% endblock %}

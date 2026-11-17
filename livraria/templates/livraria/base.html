@@ -1,0 +1,137 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block titulo %}Livraria{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: {
+                    tinta: '#1f1b16', papel: '#f3ebdd', 'papel-escuro': '#e8dcc6',
+                    creme: '#fbf6ec', tijolo: '#b3432a', floresta: '#25392f',
+                    suave: '#6f6556', linha: '#d3c4a8', ouro: '#e0b44c'
+                },
+                fontFamily: {
+                    serif: ['Fraunces', 'Georgia', 'serif'],
+                    sans: ['Work Sans', 'system-ui', 'sans-serif']
+                },
+                boxShadow: {
+                    hard: '6px 6px 0 #1f1b16',
+                    'hard-sm': '3px 3px 0 #1f1b16',
+                    capa: '6px 10px 22px rgba(60,40,20,.28)'
+                },
+                keyframes: {
+                    'fade-up': { '0%': { opacity: '0', transform: 'translateY(24px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                    'float': { '0%,100%': { transform: 'translateY(0) rotate(var(--r,0deg))' }, '50%': { transform: 'translateY(-14px) rotate(var(--r,0deg))' } },
+                    'toast-in': { '0%': { opacity: '0', transform: 'translateX(120%)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+                    'pop': { '0%': { opacity: '0', transform: 'scale(.6)' }, '70%': { transform: 'scale(1.06)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+                    'draw': { to: { strokeDashoffset: '0' } }
+                },
+                animation: {
+                    'fade-up': 'fade-up .8s cubic-bezier(.2,.7,.2,1) both',
+                    'float': 'float 6s ease-in-out infinite',
+                    'toast-in': 'toast-in .5s cubic-bezier(.2,.8,.2,1) both',
+                    'pop': 'pop .6s cubic-bezier(.2,.8,.2,1) both',
+                    'draw': 'draw .6s .4s ease-out forwards'
+                }
+            } }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .reveal { @apply opacity-0 translate-y-8 transition duration-700 ease-out; }
+            .reveal.visible { @apply opacity-100 translate-y-0; }
+            .btn { @apply relative inline-flex items-center justify-center gap-2 border-2 border-tinta bg-tinta px-6 py-3 font-semibold tracking-wide text-papel transition duration-200 hover:-translate-y-0.5 hover:border-tijolo hover:bg-tijolo hover:shadow-hard-sm active:translate-y-0 active:scale-95; }
+            .btn-sec { @apply bg-transparent text-tinta hover:border-tinta hover:bg-tinta hover:text-papel; }
+            .link-anim { @apply relative after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-tijolo after:transition-all after:duration-300 hover:after:w-full; }
+        }
+    </style>
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .animate-draw { stroke-dashoffset: 0 !important; }
+        }
+    </style>
+</head>
+<body class="flex min-h-screen flex-col bg-papel font-sans text-tinta antialiased">
+
+    <header class="sticky top-0 z-40 border-b-2 border-tinta bg-papel/85 backdrop-blur-md">
+        <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+            <a href="{% url 'catalogo' %}" class="group font-serif text-3xl font-bold tracking-tight">
+                Livraria<span class="inline-block text-tijolo transition-transform duration-300 group-hover:scale-150">.</span>
+            </a>
+            <nav class="flex items-center gap-5 text-sm sm:gap-6">
+                {% if user.is_authenticated %}
+                    <span class="hidden text-suave sm:inline">Olá, {{ user.first_name|default:user.username }}</span>
+                    <a class="link-anim" href="{% url 'minhas_compras' %}">Minhas compras</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="link-anim" type="submit">Sair</button>
+                    </form>
+                {% else %}
+                    <a class="link-anim" href="{% url 'login' %}">Entrar</a>
+                    <a class="btn !px-4 !py-2 rounded-full" href="{% url 'cadastro' %}">Criar conta</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="fixed right-4 top-20 z-50 flex w-[min(92vw,380px)] flex-col gap-3">
+        {% for m in messages %}
+        <div data-toast class="animate-toast-in flex items-start gap-3 border-2 border-l-8 border-tinta bg-creme p-4 shadow-hard-sm {% if m.tags == 'error' %}border-l-tijolo{% else %}border-l-floresta{% endif %}">
+            <p class="flex-1 text-sm">{{ m }}</p>
+            <button type="button" data-close class="text-suave transition hover:text-tinta" aria-label="Fechar">✕</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="mx-auto w-full max-w-6xl flex-1 px-6 pb-20">
+        {% block conteudo %}{% endblock %}
+    </main>
+
+    <footer class="bg-floresta text-[#cfd8c9]">
+        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-8 text-center sm:flex-row sm:text-left">
+            <div>
+                <p class="font-serif text-2xl text-papel">Livraria.</p>
+                <p class="text-sm">Livros para ler devagar.</p>
+            </div>
+            <p class="text-sm opacity-70">© {% now "Y" %} Livraria</p>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        var els = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) {
+            els.forEach(function (e) { e.classList.add('visible'); });
+        } else {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
+                });
+            }, { threshold: 0.12 });
+            els.forEach(function (e) { io.observe(e); });
+        }
+        document.querySelectorAll('[data-toast]').forEach(function (t) {
+            function fechar() {
+                t.style.transition = 'all .4s ease';
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(120%)';
+                setTimeout(function () { t.remove(); }, 400);
+            }
+            t.querySelector('[data-close]').addEventListener('click', fechar);
+            setTimeout(fechar, 5000);
+        });
+    })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

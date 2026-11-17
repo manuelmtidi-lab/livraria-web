@@ -1,0 +1,67 @@
+{% extends 'livraria/base.html' %}
+
+{% block titulo %}Catálogo - Livraria{% endblock %}
+
+{% block conteudo %}
+<section class="relative overflow-hidden border-b border-linha py-16 sm:py-24">
+    <div class="relative z-10 max-w-2xl">
+        <p class="animate-fade-up text-xs font-semibold uppercase tracking-[0.3em] text-tijolo">Livraria independente</p>
+        <h1 class="mt-4 font-serif text-5xl font-semibold leading-[1.02] tracking-tighter sm:text-7xl">
+            <span class="inline-block animate-fade-up" style="animation-delay:.1s">Livros</span>
+            <span class="inline-block animate-fade-up" style="animation-delay:.2s">para</span>
+            <span class="inline-block animate-fade-up" style="animation-delay:.3s">ler</span>
+            <em class="inline-block animate-fade-up font-normal text-tijolo" style="animation-delay:.45s">devagar.</em>
+        </h1>
+        <p class="animate-fade-up mt-5 max-w-md text-lg text-suave" style="animation-delay:.55s">
+            Procure pelo título, pelo autor ou pela editora e leve para casa a próxima história.
+        </p>
+        <form method="get" action="{% url 'catalogo' %}"
+              class="animate-fade-up mt-10 flex max-w-lg items-center border-b-2 border-tinta transition-colors focus-within:border-tijolo"
+              style="animation-delay:.7s">
+            <svg class="h-5 w-5 text-suave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input type="search" name="q" value="{{ q }}" placeholder="O que quer ler hoje?"
+                   class="flex-1 bg-transparent px-3 py-3 text-lg outline-none placeholder:text-suave">
+            <button type="submit" class="text-xs font-semibold uppercase tracking-widest text-tijolo transition-all duration-300 hover:tracking-[0.3em]">Procurar</button>
+        </form>
+    </div>
+
+    <div class="pointer-events-none absolute -right-4 top-10 hidden h-80 w-72 lg:block" aria-hidden="true">
+        <div class="absolute right-24 top-6 h-56 w-36 animate-float rounded-r-md bg-tijolo shadow-capa" style="--r:-8deg"></div>
+        <div class="absolute right-4 top-20 h-60 w-40 animate-float rounded-r-md bg-floresta shadow-capa" style="--r:6deg; animation-delay:-2s"></div>
+        <div class="absolute right-40 top-40 h-48 w-32 animate-float rounded-r-md bg-ouro shadow-capa" style="--r:-3deg; animation-delay:-4s"></div>
+    </div>
+</section>
+
+<div class="mb-8 mt-12 flex items-baseline justify-between">
+    <h2 class="font-serif text-3xl">{% if q %}Resultados para “{{ q }}”{% else %}Em destaque{% endif %}</h2>
+    <span class="text-sm text-suave">{{ livros|length }} título{{ livros|length|pluralize }}</span>
+</div>
+
+{% if livros %}
+<div class="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
+    {% for livro in livros %}
+    <a href="{% url 'detalhe_livro' livro.id %}" class="reveal group block" style="transition-delay: {% cycle '0' '70' '140' '210' %}ms">
+        <div class="transition duration-300 group-hover:-translate-y-2 group-hover:-rotate-1 group-hover:drop-shadow-2xl">
+            {% include 'livraria/_capa.html' %}
+        </div>
+        <h3 class="mt-4 font-serif text-lg leading-snug transition-colors group-hover:text-tijolo">{{ livro.titulo }}</h3>
+        <p class="text-sm text-suave">{{ livro.autor }} · {{ livro.editora }}</p>
+        <div class="mt-2 flex items-center justify-between">
+            <span class="font-serif text-lg font-semibold">{{ livro.preco_venda }} Kz</span>
+            {% if livro.quantidade == 0 %}
+                <span class="rounded-full border border-tijolo px-2 py-0.5 text-[0.65rem] uppercase tracking-widest text-tijolo">Esgotado</span>
+            {% else %}
+                <span class="-translate-x-1.5 text-tijolo opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100">→</span>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="py-20 text-center animate-fade-up">
+    <p class="font-serif text-3xl">Nada por aqui… ainda.</p>
+    <p class="mt-2 text-suave">Tente outro título ou autor.</p>
+    <a class="btn mt-6" href="{% url 'catalogo' %}">Ver tudo</a>
+</div>
+{% endif %}
+{% endblock %}
